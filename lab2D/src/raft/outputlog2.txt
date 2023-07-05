@@ -1,0 +1,146 @@
+000003 TIMR S0 [0] restart ! lastApplied = 0
+000007 TIMR S1 [0] restart ! lastApplied = 0
+000008 TIMR S2 [0] restart ! lastApplied = 0
+Test (2B): basic agreement ...
+-------------- one (100) ------------
+-------------- another loop cmd: 100------------
+000109 TIMR S0 [0] follower, CHECK
+000109 TIMR S1 [0] follower, CHECK
+000120 TIMR S2 [0] follower, CHECK
+000212 TIMR S2 [0] follower, CHECK
+000212 TIMR S1 [0] follower, CHECK
+000212 TIMR S0 [0] follower, CHECK
+000313 TIMR S2 [0] follower, CHECK
+000313 TIMR S0 [0] follower, CHECK
+000314 TIMR S1 [0] follower, CHECK
+000416 TIMR S2 [0] follower, CHECK
+000416 TIMR S0 [0] follower, CHECK
+000416 TIMR S1 [0] follower, CHECK
+000507 TIMR S0 [0] follower, CHECK
+000518 TIMR S2 [0] follower, CHECK
+-------------- another loop cmd: 100------------
+000521 TIMR S1 [0] follower, CHECK
+000611 TIMR S2 [0] follower, CHECK
+000612 TIMR S1 [0] follower, CHECK
+000612 TIMR S0 [0] follower, CHECK
+000714 TIMR S0 [0] follower, CHECK
+000714 TIMR S1 [0] follower, CHECK
+000714 TIMR S2 [0] follower, CHECK
+000816 TIMR S1 [0] follower, CHECK
+000816 TIMR S0 [0] follower, CHECK
+000816 TIMR S2 [0] follower, CHECK
+000907 TIMR S0 [0] follower, CHECK
+000919 TIMR S1 [0] follower, CHECK
+000919 TIMR S2 [0] follower, CHECK
+001011 TIMR S2 [0] follower, CHECK
+001011 TIMR S1 [0] follower, CHECK
+001011 TIMR S0 [0] follower, CHECK
+-------------- another loop cmd: 100------------
+001115 TIMR S1 [0] follower, CHECK
+001115 TIMR S0 [0] follower, CHECK
+001115 TIMR S2 [0] follower, CHECK
+001217 TIMR S2 [0] follower, CHECK
+001217 TIMR S1 [0] follower, CHECK
+001217 TIMR S0 [0] follower, CHECK
+001309 TIMR S0 [0] follower, CHECK
+001309 TIMR S1 [0] follower, CHECK
+001320 TIMR S2 [0] follower, CHECK
+001412 TIMR S1 [0] follower, CHECK
+001412 TIMR S0 [0] follower, CHECK
+001413 TIMR S2 [0] follower, CHECK
+001514 TIMR S2 [0] follower, CHECK
+001515 TIMR S1 [0] follower, CHECK
+001515 TIMR S0 [0] follower, CHECK
+-------------- another loop cmd: 100------------
+001608 TIMR S0 [0] follower, CHECK
+001620 TIMR S1 [0] follower, CHECK
+001620 TIMR S2 [0] follower, CHECK
+001712 TIMR S2 [0] follower, CHECK
+001712 TIMR S1 [0] follower, CHECK
+001712 TIMR S0 [0] follower, CHECK
+001814 TIMR S2 [0] follower, CHECK
+001815 TIMR S0 [0] follower, CHECK
+001815 TIMR S1 [0] follower, CHECK
+001917 TIMR S2 [0] follower, CHECK
+001917 TIMR S0 [0] follower, CHECK
+001917 TIMR S1 [0] follower, CHECK
+002009 TIMR S0 [0] follower, CHECK
+002009 TIMR S1 [0] follower, CHECK
+002009 TIMR S1 [0] follower, times out , be candidate 197 1688004754216 1688004754016 
+002011 TIMR S1 candidate , send VoteRequest to peers 0
+002011 TIMR S1 candidate , send VoteRequest to peers 2
+002011 TIMR S1 [1] candidate, election over
+002011 TIMR S2 [0] follower, CHECK
+002014 VOTE S0 [0] recv RequestVote from 1
+002015 VOTE S0 [1] Follower (index:0 term:0) vote --> S1 [1] (index:0 term:0)
+002015 VOTE S2 [0] recv RequestVote from 1
+002015 VOTE S2 [1] Follower (index:0 term:0) vote --> S1 [1] (index:0 term:0)
+labgob warning: Decoding into a non-default variable/field Term may not work
+002017 TIMR S1 [1] candidate, get reply from: 2
+002017 TIMR S1 [1] candidate, get vote: 2
+002017 TIMR S1 [1] candidate, get reply from: 0
+002017 TIMR S1 [1] candidate, get vote: 3
+-------------- another loop cmd: 100------------
+002111 TIMR S1 [1] candidate, get enough vote 3
+002111 TIMR S0 [1] follower, CHECK
+002112 TIMR S1 [1], became leader !
+002111 TIMR S2 [1] follower, CHECK
+002112 TIMR S2 [1] follower, restart be follower
+002112 TIMR S0 [1] follower, restart be follower
+002124 TIMR S1 [1] Leader, send AE to S0, args.PreLogIndex = 0 lastIncludeIndex = 0
+002124 TIMR S1 [1] Leader, send heartBeat to 0, length = 0 args.PreLogIndex = 0
+002125 TIMR S1 [1] Leader, send AE to S2, args.PreLogIndex = 0 lastIncludeIndex = 0
+002125 TIMR S1 [1] Leader, send heartBeat to 2, length = 0 args.PreLogIndex = 0
+002128 LOG1 S0 [1] Follower, LOG: [ [0 0]{<nil>}, ]
+002128 LOG1 S2 [1] Follower, LOG: [ [0 0]{<nil>}, ]
+002128 LOG1 S0 [1] Follower, return true, pre match, Index = 0 
+002129 LOG1 S2 [1] Follower, return true, pre match, Index = 0 
+002129 LOG1 S0 [1] Follower recv empty AE form S1
+002129 LOG1 S2 [1] Follower recv empty AE form S1
+002129 LOG1 S0 [1] Follower recv AE form S1 add log len = 1, index: 1
+002129 LOG1 S2 [1] Follower recv AE form S1 add log len = 1, index: 1
+002129 LOG1 S0 [1] Follower, lastApplied = 0, LOG: [ [0 0]{<nil>}, ]
+002129 LOG1 S2 [1] Follower, lastApplied = 0, LOG: [ [0 0]{<nil>}, ]
+002132 LOG1 S1 [1] Leader commitIndex: 0 recv matchIndex: 0 
+002132 LOG1 S1 [1] Leader get AE reply, nextIndex[0] 1 
+002132 LOG1 S1 [1] Leader commitIndex: 0 recv matchIndex: 0 
+002133 LOG1 S1 [1] Leader get AE reply, nextIndex[2] 1 
+002217 TIMR S2 [1] follower, CHECK
+002217 TIMR S2 [1] follower, restart be follower
+002217 TIMR S0 [1] follower, CHECK
+002218 TIMR S0 [1] follower, restart be follower
+002218 LOG1 S1 [1] Leader, LOG: [ [0 0]{<nil>}, ]
+002319 TIMR S0 [1] follower, CHECK
+002320 LOG1 S1 [1] Leader, LOG: [ [0 0]{<nil>}, ]
+002320 TIMR S2 [1] follower, CHECK
+002422 TIMR S2 [1] follower, CHECK
+002422 LOG1 S1 [1] Leader, LOG: [ [0 0]{<nil>}, ]
+002422 TIMR S0 [1] follower, CHECK
+002514 LOG1 S1 [1] Leader, LOG: [ [0 0]{<nil>}, ]
+002526 TIMR S2 [1] follower, CHECK
+002526 TIMR S0 [1] follower, CHECK
+-------------- another loop cmd: 100------------
+002538 LOG1 S1 [1] get cmd LOG++: 100, index = 1 LOG : [ [0 0]{<nil>}, [1 1]{100}, ]
+-------------- index 1 pull a cmd to S1 ------------
+-------------- Ncommit 0 3 ------index 1 ------
+002620 TIMR S2 [1] follower, CHECK
+002620 TIMR S0 [1] follower, CHECK
+002620 LOG1 S1 [1] Leader, LOG: [ [0 0]{<nil>}, [1 1]{100}, ]
+002631 TIMR S1 [1] Leader, send AE to S0, args.PreLogIndex = 0 lastIncludeIndex = 0
+002632 TIMR S1 [1] Leader, send AE to S2, args.PreLogIndex = 0 lastIncludeIndex = 0
+002634 LOG1 S0 [1] Follower, LOG: [ [0 0]{<nil>}, ]
+002635 LOG1 S0 [1] Follower, return true, pre match, Index = 0 
+002635 LOG1 S0 [1] Follower recv AE form S1 add log len = 1, index: 1
+002635 LOG1 S2 [1] Follower, LOG: [ [0 0]{<nil>}, ]
+002635 LOG1 S2 [1] Follower, return true, pre match, Index = 0 
+002635 LOG1 S0 [1] Follower, lastApplied = 1, LOG: [ [0 0]{<nil>}, [1 1]{100}, ]
+002635 LOG1 S2 [1] Follower recv AE form S1 add log len = 1, index: 1
+002635 LOG1 S2 [1] Follower, lastApplied = 1, LOG: [ [0 0]{<nil>}, [1 1]{100}, ]
+002637 LOG1 S1 [1] Leader commitIndex: 0 recv matchIndex: 1 
+002638 LOG1 S1 [1] Leader send  log  AE over, now commit: 1 
+002638 LOG1 S1 Leader [1] apply log , Index -> %!(EXTRA int=1)
+002638 LOG1 S1 [1] Leader get AE reply, nextIndex[0] 2 
+002638 LOG1 S1 [1] Leader commitIndex: 1 recv matchIndex: 1 
+002638 LOG1 S1 [1] Leader get AE reply, nextIndex[2] 2 
+signal: interrupt
+FAIL	6.5840/raft	0.277s

@@ -1,0 +1,587 @@
+========= 19 =========
+
+Test (2B): basic agreement ...
+-------------- one (100) ------------
+-------------- another loop cmd: 100------------
+-------------- another loop cmd: 100------------
+-------------- another loop cmd: 100------------
+-------------- another loop cmd: 100------------
+-------------- another loop cmd: 100------------
+002414 TIMR S2 [1] follower, times out, be candidate
+002415 TIMR S0 [1] follower, times out, be candidate
+002415 TIMR S2 candidate , send VoteRequest to peers 0
+002416 TIMR S0 candidate , send VoteRequest to peers 1
+002416 TIMR S0 candidate , send VoteRequest to peers 2
+002416 TIMR S0 [2] candidate, election over
+002416 TIMR S2 candidate , send VoteRequest to peers 1
+002418 TIMR S2 [2] candidate, election over
+002423 VOTE S1 [1] recv RequestVote from 0
+002423 VOTE S1 [2] Follower (index:0 term:0) vote --> S0 [2] (index:0 term:0)
+002423 VOTE S0 [2] recv RequestVote from 2
+002423 VOTE S0 [2] Candidate (index:0) not vote to S2 [2] (index:0)
+002424 VOTE S1 [2] recv RequestVote from 2
+labgob warning: Decoding into a non-default variable/field Term may not work
+002424 VOTE S1 [2] Follower (index:0 term:0) not vote to S2 [2] (index:0 term:0)
+002423 VOTE S2 [2] recv RequestVote from 0
+002424 VOTE S2 [2] Candidate (index:0) not vote to S0 [2] (index:0)
+002425 TIMR S0 [2] candidate, get reply from: 1
+002425 TIMR S0 [2] candidate, get vote: 2
+002426 TIMR S2 [2] candidate, get reply from: 1
+002426 TIMR S0 [2] candidate, get reply from: 2
+002426 TIMR S2 [2] candidate, get reply from: 0
+002508 TIMR S1 [2] follower, restart be follower
+002519 TIMR S0 [2] candidate, get enough vote 2
+002519 TIMR S0 [2], became leader !
+-------------- another loop cmd: 100------------
+002541 LOG1 S0 [2] get cmd LOG++: [ <nil>, 100, ], index = 1
+-------------- index 1 pull a cmd ------------
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+003022 TIMR Leader, retry send 
+003022 TIMR Leader, retry send 
+003022 TIMR S0 [2] Leader, send heartBeat to peers 2, args.PreLogIndex = 0 LOG: [ <nil>, 100, ]
+003022 TIMR S2 [2] candidate, times out continue candidate
+003023 TIMR S2 candidate , send VoteRequest to peers 0
+003023 TIMR S2 candidate , send VoteRequest to peers 1
+003024 TIMR S2 [3] candidate, election over
+003024 TIMR S0 [2] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, 100, ]
+003026 VOTE S1 [2] recv RequestVote from 2
+003026 VOTE S0 [2] recv RequestVote from 2
+003026 VOTE S1 [3] Compare (index:0) vote, index is lower than candidate
+003027 VOTE S0 [3] Compare not vote, lastLogTerm is highter than candidate
+003027 VOTE S1 [3] Follower (index:0 term:0) vote --> S2 [3] (index:0 term:0)
+003027 VOTE S0 [3] Leader (index:1 term:2) not vote to S2 [3] (index:0 term:0)
+003028 TIMR S2 [3] candidate, get reply from: 0
+003028 ERRO S1 [3] Follower, recv lower heartBeat
+003028 TIMR S2 [3] candidate, get reply from: 1
+003029 TIMR S2 [3] candidate, get vote: 2
+003029 ERRO S2 [3] Cadidate, recv lower heartBeat
+003031 LOG1 S0 [3] Leader nextIndex[1]--: 1 
+003114 TIMR S1 [3] follower, restart be follower
+003126 TIMR S2 [3] candidate, get enough vote 2
+003126 TIMR S2 [3], became leader !
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+003523 TIMR Leader, retry send 
+-------------- Ncommit 0 3 ------index 1 ------
+003630 TIMR Leader, retry send 
+003630 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+003631 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+003631 TIMR Leader, retry send 
+003631 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+003632 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+003634 LOG1 S0 [3] Follower, need to delete some log
+003634 LOG1 S0 [3] Follower, pre is match, but log not match, delete and overwrite
+003634 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+003635 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+003637 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+003637 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+003723 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+004130 TIMR Leader, retry send 
+004131 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+004131 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+004132 TIMR Leader, retry send 
+004133 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+004133 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+004134 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+004136 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+004137 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+004139 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+004226 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+004641 TIMR Leader, retry send 
+004641 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+004642 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+004641 TIMR Leader, retry send 
+004643 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+004643 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+004645 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+004646 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+004648 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+004648 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+004735 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+005143 TIMR Leader, retry send 
+005144 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+005144 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+005144 TIMR Leader, retry send 
+005145 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+005146 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+005148 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+005149 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+005150 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+005151 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+005238 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+005648 TIMR Leader, retry send 
+005648 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+005648 TIMR Leader, retry send 
+005648 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+-------------- Ncommit 0 3 ------index 1 ------
+005649 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+005649 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+005652 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+005653 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+005654 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+005655 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+005742 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+006153 TIMR Leader, retry send 
+006154 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+006154 TIMR Leader, retry send 
+006154 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+006155 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+006156 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+006157 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+006159 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+006159 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+006161 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+006249 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+006654 TIMR Leader, retry send 
+006655 TIMR Leader, retry send 
+006654 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+006655 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+006656 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+006656 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+006658 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+006659 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+006660 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+006661 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+006749 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+007162 TIMR Leader, retry send 
+007162 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+007162 TIMR Leader, retry send 
+007162 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+007163 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+007164 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+007165 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+007167 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+007168 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+007168 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+007257 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+007670 TIMR Leader, retry send 
+007670 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+007670 TIMR Leader, retry send 
+007671 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+007671 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+007671 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+007674 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+007674 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+007676 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+007676 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+007768 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+008180 TIMR Leader, retry send 
+008180 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+008181 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+008180 TIMR Leader, retry send 
+008182 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+008182 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+008184 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+008185 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+008186 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+008188 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+008277 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+008690 TIMR Leader, retry send 
+008690 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+008690 TIMR Leader, retry send 
+008691 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+008691 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+008691 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+008694 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+008694 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+008696 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+008697 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+008787 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+009199 TIMR Leader, retry send 
+009199 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+009199 TIMR Leader, retry send 
+009200 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+009201 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+009201 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+009203 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+009204 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+009206 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+009206 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+009295 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+009699 TIMR Leader, retry send 
+009699 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+009700 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+009700 TIMR Leader, retry send 
+009701 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+009701 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+009703 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+009704 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+009705 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+009706 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+009799 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+010201 TIMR Leader, retry send 
+010202 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+010202 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+010202 TIMR Leader, retry send 
+010203 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+010204 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+010206 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+010207 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+010208 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+010209 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+010306 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+010709 TIMR Leader, retry send 
+010710 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+010710 TIMR Leader, retry send 
+010710 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+010711 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+010711 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+010714 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+010715 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+010716 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+010717 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+010816 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+011215 TIMR Leader, retry send 
+011215 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+011215 TIMR Leader, retry send 
+011216 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+011216 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+011217 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+011218 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+011220 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+011220 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+011221 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+011319 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+011725 TIMR Leader, retry send 
+011726 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+011726 TIMR Leader, retry send 
+011726 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+011727 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+011727 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+011729 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+011730 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+011731 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+011732 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+011829 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+012233 TIMR Leader, retry send 
+-------------- Ncommit 0 3 ------index 1 ------
+012234 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+012234 TIMR Leader, retry send 
+012234 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+012236 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+012236 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+012239 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+012240 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+012241 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+012243 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+012337 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+012742 TIMR Leader, retry send 
+012743 TIMR Leader, retry send 
+012743 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+012743 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+012745 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+012745 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+012748 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+012748 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+012750 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+012751 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+012847 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+013249 TIMR Leader, retry send 
+013249 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+013249 TIMR Leader, retry send 
+013249 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+013250 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+013250 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+013252 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+013252 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+013253 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+013254 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+013356 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+013753 TIMR Leader, retry send 
+013754 TIMR Leader, retry send 
+013754 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+013754 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+013755 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+013755 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+013758 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+013758 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+013759 TIMR S1 [3] follower, restart be follower
+013759 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+013760 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+014255 TIMR Leader, retry send 
+014256 TIMR Leader, retry send 
+014256 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+014256 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+014257 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+014257 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+014259 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+014259 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+014260 TIMR S1 [3] follower, restart be follower
+014261 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+014261 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+014756 TIMR Leader, retry send 
+014757 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+014757 TIMR Leader, retry send 
+014757 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+014758 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+014758 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+014759 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+014760 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+014761 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+014761 TIMR S1 [3] follower, restart be follower
+014762 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+015257 TIMR Leader, retry send 
+015258 TIMR Leader, retry send 
+015258 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+015258 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+015258 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+015259 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+015261 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+015262 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+015262 TIMR S1 [3] follower, restart be follower
+015264 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+015264 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+015766 TIMR Leader, retry send 
+015767 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+015767 TIMR Leader, retry send 
+015767 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+015768 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+015768 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+015770 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+015771 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+015772 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+015773 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+015871 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+016272 TIMR Leader, retry send 
+016272 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+016272 TIMR Leader, retry send 
+016272 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+016273 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+016274 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+016277 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+016278 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+016279 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+016280 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+016377 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+016779 TIMR Leader, retry send 
+016779 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+016779 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+016779 TIMR Leader, retry send 
+016780 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+016780 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+016783 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+016784 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+016785 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+016786 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+016882 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+017285 TIMR Leader, retry send 
+017286 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+017286 TIMR Leader, retry send 
+017286 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+017286 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+017287 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+017288 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+017289 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+017290 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+017290 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+017391 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+017786 TIMR Leader, retry send 
+017786 TIMR Leader, retry send 
+017787 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+017787 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+017789 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+017789 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+017792 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+017794 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+017796 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+017798 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+017901 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+018293 TIMR Leader, retry send 
+018293 TIMR Leader, retry send 
+018294 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+018294 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+018295 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+018295 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+018299 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+018299 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+018300 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+018302 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+018303 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+018797 TIMR Leader, retry send 
+018798 TIMR Leader, retry send 
+018798 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+018798 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+018799 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+018800 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+018802 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+018803 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+018804 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+018805 TIMR S1 [3] follower, restart be follower
+018806 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+019301 TIMR Leader, retry send 
+019301 TIMR Leader, retry send 
+019301 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+019301 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+019302 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+019302 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+019304 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+019305 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+019305 TIMR S1 [3] follower, restart be follower
+019306 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+019307 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+019806 TIMR Leader, retry send 
+019806 TIMR Leader, retry send 
+019806 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+019807 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+019807 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+-------------- Ncommit 0 3 ------index 1 ------
+019808 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+019809 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+019810 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+019811 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+019812 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+019909 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+020308 TIMR Leader, retry send 
+020309 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+020309 TIMR Leader, retry send 
+020309 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+020310 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+020310 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+020312 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+020314 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+020314 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+020315 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+020413 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+020810 TIMR Leader, retry send 
+020811 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+020811 TIMR Leader, retry send 
+020811 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+020811 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+020812 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+020814 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+020814 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+020815 TIMR S1 [3] follower, restart be follower
+020816 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+020817 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+021314 TIMR Leader, retry send 
+021314 TIMR Leader, retry send 
+021314 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+021314 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+021315 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+021315 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+021317 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+021318 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+021319 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+021320 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+021418 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+021815 TIMR Leader, retry send 
+021815 TIMR Leader, retry send 
+021815 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+021816 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+021816 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+021817 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+021819 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+021820 TIMR S1 [3] follower, restart be follower
+021820 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+021822 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+021823 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+-------------- Ncommit 0 3 ------index 1 ------
+022322 TIMR Leader, retry send 
+022322 TIMR S2 [3] Leader, send empty heartBeat to 0, args.PreLogIndex = 0
+022323 TIMR S2 [3] Leader, send heartBeat to peers 0, args.PreLogIndex = 0 LOG: [ <nil>, ]
+022323 TIMR Leader, retry send 
+022324 TIMR S2 [3] Leader, send empty heartBeat to 1, args.PreLogIndex = 0
+022325 TIMR S2 [3] Leader, send heartBeat to peers 1, args.PreLogIndex = 0 LOG: [ <nil>, ]
+022327 LOG1 S0 [3] recv empty AE form S2 LOG: [ <nil>, ]
+022328 LOG1 S1 [3] recv empty AE form S2 LOG: [ <nil>, ]
+022330 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+022331 LOG1 S2 [3] Leader commitIndex: 0 recv matchIndex: 0 
+022425 TIMR S1 [3] follower, restart be follower
+-------------- Ncommit 0 3 ------index 1 ------
+--- FAIL: TestBasicAgree2B (2.27s)
+    config.go:602: one(100) failed to reach agreement
+022726 LOG2 S0 [3] killed !
+022727 LOG2 S2 [3] killed !
+FAIL
+exit status 1
+FAIL	6.5840/raft	2.280s
+=
