@@ -9,12 +9,13 @@ import (
 	"sync/atomic"
 
 	"time"
+	// "fmt"
 )
 
-
-const Debug = true
+// const Debug = true
+const Debug = false
 func DPrintf(format string, a ...interface{}) (n int, err error) {
-	// log.SetFlags(log.Lmicroseconds)
+	log.SetFlags(log.Lmicroseconds)
 	if Debug {
 		log.Printf(format, a...)
 	}
@@ -31,6 +32,7 @@ type Op struct {
 	Value        string
 	ClientId     int64
 	MsgId        int
+	Term         int
 }
 
 type KVServer struct {
@@ -49,33 +51,35 @@ type KVServer struct {
 }
 
 func (kv *KVServer) ApplyToChannel() {
-	for log := range kv.applyCh {
-		if log.CommandValid {
-			kv.mu.Lock()
-			// check if the wait channel is exist
-			// log.commandIndex is same as raftIndex
-			DPrintf("server[%d] ApplyToChannel recv, Raftindex = %d, MsgIndex = %d, value: %v", kv.me, log.CommandIndex, (log.Command.(Op)).MsgId, (log.Command.(Op)).Value)
+	for !kv.killed() {
+		msg := <- kv.applyCh
+		kv.mu.Lock()
 
-			waitCh, IsExist := kv.waitCh[log.CommandIndex]
-			kv.mu.Unlock()
+		if msg.CommandValid {
+			operation := msg.Command.(Op)
+			operation.Term = msg.CommandTerm
+
+			// fmt.Printf("server[%d] ApplyToChannel recv, Raftindex = %d, MsgIndex = %d, key= %v value= %v\n", kv.me, msg.CommandIndex, operation.MsgId, operation.Key, operation.Value)
+			kv.executeCmd(operation)
+	
+			// check if the wait channel is exist
+			// msg.commandIndex is same as raftIndex
+			// DPrintf("server[%d] ApplyToChannel recv, Raftindex = %d, MsgIndex = %d, key= %v value= %v", kv.me, msg.CommandIndex, (msg.Command.(Op)).MsgId, (msg.Command.(Op)).Key, (msg.Command.(Op)).Value)
+			DPrintf("server[%d] ApplyToChannel recv, Raftindex = %d, MsgIndex = %d, key= %v value= %v", kv.me, msg.CommandIndex, operation.MsgId, operation.Key, operation.Value)
+			waitCh, IsExist := kv.waitCh[msg.CommandIndex]
 			if !IsExist{
 				// waitCh has been delete
-				// DPrintf("server[%d] channel wait for, Raftindex = %d, has been delete", kv.me, log.CommandIndex)
+				DPrintf("server[%d] channel wait for, Raftindex = %d, has been delete", kv.me, msg.CommandIndex)
 			} else {
 				// send to waitCh
-				waitCh <- log.Command.(Op)
+				DPrintf("server[%d] ApplyToChannel recv, send to waitCh ", kv.me)
+				waitCh <- operation
 			}
-		} else if log.SnapshotValid {
-
+		} else if msg.SnapshotValid {
+	
 		}
+		kv.mu.Unlock()
 
-		if kv.killed(){
-			kv.mu.Lock()
-			DPrintf("server[%d] has killed", kv.me)
-			kv.mu.Unlock()
-			
-			return
-		}
 	}
 }
 
@@ -94,14 +98,14 @@ func (kv *KVServer) Get(args *RpcArgs, reply *RpcReply) {
 		ClientId : args.ClientId,
 		MsgId : args.MsgId,
 	}
-	kv.commitLog(args, reply, &log)
+	kv.commitLog(args, reply, log)
 }
 
 func (kv *KVServer) PutAppend(args *RpcArgs, reply *RpcReply) {
 	// Your code here.
-	// kv.mu.Lock()
-	// DPrintf("server[%d] PutAppend, ClientId= %d, MsgId= %d", kv.me, args.ClientId, args.MsgId)
-	// kv.mu.Unlock()
+	kv.mu.Lock()
+	DPrintf("server[%d] PutAppend, ClientId= %d, MsgId= %d", kv.me, args.ClientId, args.MsgId)
+	kv.mu.Unlock()
 
 	log := Op{
 		Cmd : args.Cmd,
@@ -110,41 +114,64 @@ func (kv *KVServer) PutAppend(args *RpcArgs, reply *RpcReply) {
 		ClientId : args.ClientId,
 		MsgId : args.MsgId,
 	}
-	kv.commitLog(args, reply, &log)
+	kv.commitLog(args, reply, log)
 }
 
-func (kv *KVServer) commitLog(args *RpcArgs, reply *RpcReply, log *Op) {
-	raftIndex, _, isLeader := kv.rf.Start(*log)
+func (kv *KVServer) commitLog(args *RpcArgs, reply *RpcReply, log Op) {
+	// check dup
+	
+	// kv.mu.Lock()
+	// DPrintf("1")
+	// if kv.checkDup(log) {
+	// 	kv.mu.Unlock()
+	// 	reply.Info = Success
+	// 	kv.getReply(log, reply)
+	// 	return
+	// }
+	// kv.mu.Unlock()
+	
+	raftIndex, currentTerm, isLeader := kv.rf.Start(log)
+
+	kv.mu.Lock()
 	if !isLeader {
 		DPrintf("server[%d] not leader", kv.me)
-
+		
 		reply.Info = NotLeader
+		kv.mu.Unlock()
 		return
 	}
 
-	kv.mu.Lock()
-	DPrintf("server[%d] PutAppend, ClientId= %d, MsgId= %d raftIndex = %d", kv.me, args.ClientId, args.MsgId, raftIndex)
+	DPrintf("server[%d] , ClientId= %d, MsgId= %d append log", kv.me, args.ClientId, args.MsgId)
+	// DPrintf("server[%d] PutAppend, ClientId= %d, MsgId= %d raftIndex = %d", kv.me, args.ClientId, args.MsgId, raftIndex)
 
 	waitCh, IsExist := kv.waitCh[raftIndex]
 	if !IsExist {
 		kv.waitCh[raftIndex] = make (chan Op, 1)
 		waitCh = kv.waitCh[raftIndex]
 	}
-	DPrintf("server[%d] open waitCh for raftIndex = %d", kv.me, raftIndex)
+	DPrintf("server[%d] open waitCh for raftIndex = %d cmd= %v key= %v value= %v", kv.me, raftIndex, log.Cmd, log.Key, log.Value)
 	kv.mu.Unlock()
 
 	// wait for channel reply
 	select {
 	case <- time.After(time.Millisecond * 2000):
 		// timeout， need to resend
-		reply.Info = Timeout
+		DPrintf("server[%d] wait raftIndex = %d timeout change leader", kv.me, raftIndex)
+
+		reply.Info = NotLeader
 		
 	case OpRes := <- waitCh:
 		// log commit success
-		DPrintf("server[%d] recv from waitCh", kv.me)
-
-		reply.Info = Success
-		kv.executeCmd(&OpRes, reply)
+		if currentTerm != OpRes.Term {
+			// 提交时的Term和最终log记录的Term不一致,说明不是同一个log
+			reply.Info = NotLeader
+		} else {
+			DPrintf("server[%d] recv from waitCh, raftIndex = %d cmd= %v key= %v value= %v", kv.me, raftIndex, OpRes.Cmd, OpRes.Key, OpRes.Value)
+			reply.Info = Success
+			kv.mu.Lock()
+			kv.getReply(OpRes, reply)
+			kv.mu.Unlock()
+		}
 	}
 
 	kv.mu.Lock()
@@ -153,23 +180,20 @@ func (kv *KVServer) commitLog(args *RpcArgs, reply *RpcReply, log *Op) {
 	kv.mu.Unlock()
 }
 
-func (kv *KVServer) executeCmd(operation *Op, reply *RpcReply) {
-	kv.mu.Lock()
-	defer kv.mu.Unlock()
+func (kv *KVServer) checkDup(operation *Op) bool {
 	LastIndex, IsExist := kv.LastCmdIndex[operation.ClientId]
-	// if !IsExist {
-	// 	kv.LastCmdIndex[operation.ClientId] = operation.MsgId
-	// 	LastIndex = operation.MsgId
-	// } 
 	
 	if IsExist && operation.MsgId <= LastIndex {
 		// Duplicate cmd
 		DPrintf("server[%d] find dup command, MsgId = %d", kv.me, operation.MsgId)
 
-		return
+		return true
 	}
+	return false
+}
+func (kv *KVServer) getReply(operation Op, reply *RpcReply) {
 
-	// execute cmd
+	// fmt.Println("")
 	if operation.Cmd == "Get" {
 		res, IsExist := kv.kvDB[operation.Key]
 		if !IsExist {
@@ -177,17 +201,47 @@ func (kv *KVServer) executeCmd(operation *Op, reply *RpcReply) {
 		} else {
 			reply.Value = res
 		}
+	} else {
+		reply.Value = ""
+	}
+	DPrintf("server[%d] get reply cmd= %v key= %v value= %v res= %v", kv.me, operation.Cmd, operation.Key, operation.Value, reply.Value)
+
+}
+func (kv *KVServer) executeCmd(operation Op) {
+	
+	// operation := command.(Op)
+	DPrintf("server[%d] execute %v key= %v value= %v", kv.me, operation.Cmd, operation.Key, operation.Value)
+	if kv.checkDup(&operation) {
+		return
+	}
+
+	// execute cmd
+	if operation.Cmd == "Get" {
+
 	} else if operation.Cmd == "Put" {
 		kv.kvDB[operation.Key] = operation.Value
-		reply.Value = ""
+
+
 	} else if operation.Cmd == "Append" {
 		kv.kvDB[operation.Key] += operation.Value
-		reply.Value = ""
+
 	}
 
 	// update lastIndex
-	kv.LastCmdIndex[operation.ClientId] = operation.MsgId
+	lastIndex, IsExist := kv.LastCmdIndex[operation.ClientId]
+	if !IsExist || lastIndex < operation.MsgId{
+		kv.LastCmdIndex[operation.ClientId] = operation.MsgId
+	}
 
+	kv.showCurMap(operation)
+}
+
+func (kv *KVServer) showCurMap(operation Op) {
+	DPrintf("server[%d] execute over %v key= %v value= %v", kv.me, operation.Cmd, operation.Key, operation.Value)
+	// fmt.Printf("server[%d] execute over, cmd = %v key= %v value= %v\n", kv.me, operation.Cmd, operation.Key, operation.Value)
+	// fmt.Println(kv.kvDB)
+	// if _, ok := kv.rf.GetState(); ok{
+	// }
 }
 // the tester calls Kill() when a KVServer instance won't
 // be needed again. for your convenience, we supply

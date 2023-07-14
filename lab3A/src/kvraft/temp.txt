@@ -1,0 +1,42 @@
+20:01:31.451179 client[3849945837089249492] PutAppend, key=x, value=x 0 806 y, MsgId= 807
+20:01:31.451542 server[1] PutAppend, ClientId= 3849945837089249492, MsgId= 807
+20:01:31.534911 server[2] execute Append key= x value= x 0 805 y
+20:01:31.534963 server[2] execute over Append key= x value= x 0 805 y
+20:01:31.534976 server[2] ApplyToChannel recv, Raftindex = 807, MsgIndex = 806, key= x value= x 0 805 y
+20:01:31.534990 server[2] channel wait for, Raftindex = 807, has been delete
+20:01:31.539020 server[0] execute Append key= x value= x 0 805 y
+20:01:31.539079 server[0] execute over Append key= x value= x 0 805 y
+20:01:31.539098 server[0] ApplyToChannel recv, Raftindex = 807, MsgIndex = 806, key= x value= x 0 805 y
+20:01:31.539112 server[0] channel wait for, Raftindex = 807, has been delete
+20:01:31.555696 server[1] , ClientId= 3849945837089249492, MsgId= 807 append log
+20:01:31.555780 server[1] open waitCh for raftIndex = 808 cmd= Append key= x value= x 0 806 y
+20:01:31.745201 server[1] execute Append key= x value= x 0 806 y
+20:01:31.745267 server[1] execute over Append key= x value= x 0 806 y
+20:01:31.745287 server[1] ApplyToChannel recv, Raftindex = 808, MsgIndex = 807, key= x value= x 0 806 y
+20:01:31.745299 server[1] ApplyToChannel recv, send to waitCh 
+20:01:31.745320 server[1] recv from waitCh, raftIndex = 808 cmd= Append key= x value= x 0 806 y
+20:01:31.745338 server[1] get reply cmd= Append key= x value= x 0 806 y res= 
+20:01:31.745351 server[1] delete waitCh for raftIndex = 808
+20:01:31.745612 client[3849945837089249492] PutAppend, cmd= Append, key= x, value= x 0 806 y MsgId= 807, reply success
+
+
+20:00:27.519342 client[3849945837089249492] PutAppend, key=x, value=x 0 66 y, MsgId= 67
+20:00:27.519609 server[1] PutAppend, ClientId= 3849945837089249492, MsgId= 67
+20:00:27.520113 server[1] , ClientId= 3849945837089249492, MsgId= 67 append log
+20:00:27.520127 server[1] open waitCh for raftIndex = 68 cmd= Append key= x value= x 0 66 y
+20:00:27.520968 server[2] execute Append key= x value= x 0 65 y
+20:00:27.520991 server[2] execute over Append key= x value= x 0 65 y
+20:00:27.521007 server[2] ApplyToChannel recv, Raftindex = 67, MsgIndex = 66, key= x value= x 0 65 y
+20:00:27.521019 server[2] channel wait for, Raftindex = 67, has been delete
+20:00:27.521034 server[0] execute Append key= x value= x 0 65 y
+20:00:27.521056 server[0] execute over Append key= x value= x 0 65 y
+20:00:27.521075 server[0] ApplyToChannel recv, Raftindex = 67, MsgIndex = 66, key= x value= x 0 65 y
+20:00:27.521089 server[0] channel wait for, Raftindex = 67, has been delete
+20:00:27.529489 server[1] execute Append key= x value= x 0 66 y
+20:00:27.529533 server[1] execute over Append key= x value= x 0 66 y
+20:00:27.529544 server[1] ApplyToChannel recv, Raftindex = 68, MsgIndex = 67, key= x value= x 0 66 y
+20:00:27.529552 server[1] ApplyToChannel recv, send to waitCh 
+20:00:27.529570 server[1] recv from waitCh, raftIndex = 68 cmd= Append key= x value= x 0 66 y
+20:00:27.529582 server[1] get reply cmd= Append key= x value= x 0 66 y res= 
+20:00:27.529597 server[1] delete waitCh for raftIndex = 68
+20:00:27.529817 client[3849945837089249492] PutAppend, cmd= Append, key= x, value= x 0 66 y MsgId= 67, reply success

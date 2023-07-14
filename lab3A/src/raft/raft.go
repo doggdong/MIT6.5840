@@ -80,7 +80,7 @@ func init() {
 }
 
 func DebugLog(topic logTopic, format string, a ...interface{}) {
-	if topic != "TEST"{
+	if topic != "--TEST"{
 	// if topic == "LOG1"{
 		return
 	}
@@ -104,6 +104,7 @@ type ApplyMsg struct {
 	CommandValid bool
 	Command      interface{}
 	CommandIndex int
+	CommandTerm  int
 
 	// For 2D:
 	SnapshotValid bool
@@ -281,6 +282,8 @@ func (rf *Raft) readPersist(data []byte, snapshot []byte) {
 	// }
 
 	rf.lastApply = lastIncludeIndex
+	DebugLog(dTimer, "S%d [%d] rf.lastApply = %d", rf.me, rf.term, lastIncludeIndex)
+
 	rf.lastApplied = rf.log[len(rf.log)-1].Index
 }
 
@@ -600,22 +603,40 @@ func (rf *Raft) followerHandleAE(args *AppendEntries, reply *AppendEntriesReply)
 		// DebugLog(dLog, "S%d [%d] Follower, need to delete some log", rf.me, rf.term)
 		if rf.commitIndex > args.PreLogIndex{
 			
-			DebugLog(dLog, "S%d [%d] Follower, recv index error rf.commintIndex = %d, PreLogIndex = %d", rf.me, rf.term, rf.commitIndex, args.PreLogIndex)
+			DebugLog(dLog, "S%d [%d] Follower, recv index error rf.commitIndex = %d, PreLogIndex = %d", rf.me, rf.term, rf.commitIndex, args.PreLogIndex)
 		}
 		if rf.log[args.PreLogIndex - rf.lastIncludeIndex].Term == args.PreLogTerm {
 			// pre is match
-			// 1. delete log 
+			// // 1. delete log 
+			// DebugLog(dLog, "S%d [%d] Follower, return true, pre match, Index = %d ", rf.me, rf.term, args.PreLogIndex)
+
+			// rf.log = rf.log[:args.PreLogIndex+1 - rf.lastIncludeIndex]
+			// rf.lastApplied = args.PreLogIndex
+
+			// // 2. append log
+			// for i:=0; i<len(args.Entries); i++ {
+			// 	if(args.Entries[i].Cmd != nil) {
+			// 		rf.log = append(rf.log, args.Entries[i])
+			// 		rf.lastApplied++
+			// 		DebugLog(dTest, "S%d [%d] Follower recv AE form S%d add log, index: %d ", rf.me, rf.term, args.Id, args.Entries[i].Index)
+			// 	} else {
+			// 		DebugLog(dLog, "S%d [%d] Follower recv empty AE form S%d", rf.me, rf.term, args.Id)
+			// 	}
+			// }
+			// 先删除log,再append log, 改为原地修改log,长度不够再append log
 			DebugLog(dLog, "S%d [%d] Follower, return true, pre match, Index = %d ", rf.me, rf.term, args.PreLogIndex)
-
-			rf.log = rf.log[:args.PreLogIndex+1 - rf.lastIncludeIndex]
-			rf.lastApplied = args.PreLogIndex
-
-			// 2. append log
+			matchIndex := args.PreLogIndex
 			for i:=0; i<len(args.Entries); i++ {
 				if(args.Entries[i].Cmd != nil) {
-					rf.log = append(rf.log, args.Entries[i])
-					rf.lastApplied++
-					DebugLog(dTest, "S%d [%d] Follower recv AE form S%d add log, index: %d ", rf.me, rf.term, args.Id, args.Entries[i].Index)
+					if args.PreLogIndex + i + 1 <= rf.lastApplied {
+						// 原地覆盖
+						rf.log[args.PreLogIndex + i + 1 - rf.lastIncludeIndex] = args.Entries[i]
+					} else {
+						rf.log = append(rf.log, args.Entries[i])
+						rf.lastApplied++
+					}
+					matchIndex++
+					DebugLog(dTest, "S%d [%d] Follower recv AE form S%d add a log, index: %d ", rf.me, rf.term, args.Id, args.Entries[i].Index)
 				} else {
 					DebugLog(dLog, "S%d [%d] Follower recv empty AE form S%d", rf.me, rf.term, args.Id)
 				}
@@ -626,36 +647,41 @@ func (rf *Raft) followerHandleAE(args *AppendEntries, reply *AppendEntriesReply)
 			if(args.LeaderCommit > rf.commitIndex){
 				DebugLog(dLog, "S%d [%d] Follower need to apply LOG, leaderCommit= %d, selfCommit= %d", rf.me, rf.term, args.LeaderCommit, rf.commitIndex)
 
-				// beforCommit := rf.commitIndex 
-				// beforCommit := rf.lastApply 
-
 				if(rf.lastApplied < args.LeaderCommit){
 					rf.commitIndex = rf.lastApplied
 				} else {
 					rf.commitIndex = args.LeaderCommit
 				}
 				
-				// start := beforCommit+1
-				// end := rf.commitIndex
-				for logId:=rf.lastApply+1; logId <= rf.commitIndex; logId++ {
+				start := rf.lastApply+1
+				end := rf.commitIndex
+				logCopy := make([]Entry, end - start + 1)
+				copy(logCopy, rf.log[start:end+1])
+				DebugLog(dTest, "S%d [%d] Follower before apply LOG rf.lastApply= %d", rf.me, rf.term, rf.lastApply)
+
+				rf.lastApply = end
+				rf.mu.Unlock()
+				for logId:= start; logId <= end; logId++ {
 					msg := ApplyMsg{
 						CommandValid : true,
-						Command : rf.log[logId - rf.lastIncludeIndex].Cmd,
+						Command : logCopy[logId - start - rf.lastIncludeIndex].Cmd,
 						CommandIndex : logId,
+						CommandTerm : logCopy[logId - start - rf.lastIncludeIndex].Term,
 					}
-					rf.lastApply++
+					// rf.lastApply++
 
-					DebugLog(dTest, "S%d [%d] Follower apply LOG, CommandIndex= %d", rf.me, rf.term, logId)
-					rf.mu.Unlock()
-
+					// DebugLog(dTest, "S%d [%d] Follower apply LOG, CommandIndex= %d rf.lastApply= %d", rf.me, rf.term, logId, rf.lastApply)
+					// fmt.Println(dTest, "S%d [%d] Follower apply LOG, CommandIndex= %d rf.lastApply= %d", rf.me, rf.term, logId, rf.lastApply)
 					rf.applyCh <- msg
-					rf.mu.Lock()
 				}
+
+				rf.mu.Lock()
 
 			}
 
 			reply.Success = true
-			reply.MatchIndex = rf.lastApplied
+			// reply.MatchIndex = rf.lastApplied
+			reply.MatchIndex = matchIndex
 			DebugLog(dTest, "S%d [%d] Follower recv AE args.PreLogIndex = %d return MatchIndex= %d", rf.me, rf.term, args.PreLogIndex, reply.MatchIndex)
 
 			
@@ -732,7 +758,8 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	// term := -1
 	// isLeader := true
 	var isLeader bool
-
+	var index int
+	var term  int
 	// Your code here (2B).
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
@@ -746,16 +773,51 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		}
 		rf.log = append(rf.log, newEntry)
 		rf.lastApplied++
-
+		index = rf.lastApplied
+		term  = rf.term
+		rf.persist()
 		// DebugLog(dLog, "S%d [%d] get cmd LOG++: %v, index = %d LOG : %v", rf.me, rf.term, command, rf.lastApplied, rf.getLogInfo(rf.log))
 		DebugLog(dTest, "S%d [%d] get cmd LOG++: Raftindex = %d", rf.me, rf.term, rf.lastApplied,)
+		
+		currPeersNum := len(rf.peers)
+		currId := rf.me
+		rf.mu.Unlock()
+		for id := 0; id < currPeersNum; id++ {
+			if(id == currId){
+				continue
+			}
+			// DebugLog(dTest, "S%d [%d] start to send AE for S%d", rf.me, rf.term, id)
+			rf.needReply[id] <- true
+		}
+		rf.mu.Lock()
+
+		// for id := 0; id < currPeersNum; id++ {
+		// 	if(id == currId){
+		// 		continue
+		// 	}
+		// 	// rf.nextIndex[id] = rf.lastApplied + 1
+		// 	// DebugLog(dTest, "S%d [%d] start to send AE for S%d", rf.me, rf.term, id)
+		// 	go rf.SendOneAE(id)
+		// }
+
+		// for id := 0; id < len(rf.peers); id++ {
+		// 	if(id == rf.me){
+		// 		continue
+		// 	}
+		// 	DebugLog(dTest, "S%d [%d] start to send AE for S%d", rf.me, rf.term, id)
+		// 	// 这里的解锁操作会导致前后的rf.lastApplied不一致
+		// 	// 所以在解锁之前,提前将index, term保存
+		// 	rf.mu.Unlock()
+		// 	rf.needReply[id] <- true
+		// 	rf.mu.Lock()
+
+		// }
 	} else {
 		isLeader = false
+		index = rf.lastApplied
+		term  = rf.term
 	}
 
-	rf.persist()
-	index := rf.lastApplied
-	term := rf.term
 
 	return index, term, isLeader
 }
@@ -861,19 +923,20 @@ func (rf *Raft) SendAEToPeer(id int) {
 	for {
 
 		select {
-		// case <-rf.needReply[id]:
+		case <-rf.needReply[id]:
 		// 	// peer reply, need send log quickly
-		// 	// DebugLog(dTimer, "S%d [%d] Leader, Resent to S%d, because message ", rf.me, rf.term, id)
+			DebugLog(dTest, "S%d [%d] Leader, Resent to S%d, because message ", rf.me, rf.term, id)
 
 		case <-ticker.C:
-			if len(rf.needReply[id]) == 1 {
+			// DebugLog(dTimer, "S%d [%d] Leader, retry send to S%d", rf.me, rf.term, id)
+			DebugLog(dTest, "S%d [%d] Leader, ReSend to S%d, because timeout ", rf.me, rf.term, id)
+			for len(rf.needReply[id]) == 1 {
 				<-rf.needReply[id]
 			}
-			// DebugLog(dTimer, "S%d [%d] Leader, retry send to S%d", rf.me, rf.term, id)
-			// DebugLog(dTimer, "S%d [%d] Leader, ReSend to S%d, because timeout ", rf.me, rf.term, id)
 		}
+
 		ticker.Stop()
-		ticker.Reset(50*time.Millisecond)
+		ticker.Reset(200*time.Millisecond)
 
 		rf.mu.Lock()
 		if rf.state != Leader || rf.killed() {
@@ -980,7 +1043,7 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 	
 	rf.mu.Lock()
 	rf.lastApply = args.LastIncludeIndex
-	DebugLog(dTimer, "S%d  apply snapshot over , lastIndex=rf.lastApply = %d", rf.me, args.LastIncludeIndex)
+	DebugLog(dTimer, "S%d  apply snapshot over , lastIndex = rf.lastApply = %d", rf.me, args.LastIncludeIndex)
 	rf.mu.Unlock()
 
 }
@@ -1058,7 +1121,9 @@ func (rf *Raft) SendOneAE(id int) {
 		}
 
 		if reply.Success {
-			rf.MatchIndex[id] = reply.MatchIndex
+			if rf.MatchIndex[id] < reply.MatchIndex{
+				rf.MatchIndex[id] = reply.MatchIndex
+			}
 			rf.nextIndex[id] = reply.MatchIndex + 1
 			// if rf.nextIndex[id] < reply.MatchIndex + 1{
 			// }
@@ -1168,7 +1233,8 @@ func (rf *Raft) beFollower(term int) {
 	rf.term = term
 	rf.stateReset = false
 	// rf.votedFor = -1
-	timeDuration := 150 + (rand.Int63() % 150)
+	timeDuration := 300 + (rand.Int63() % 300)
+	// timeDuration := 150 + (rand.Int63() % 150)
 	rf.timeReset = time.Now().UnixMilli()
 	rf.persist()
 
@@ -1225,7 +1291,8 @@ func (rf *Raft) beCandidate(term int) {
 
 	rf.mu.Unlock()
 	
-	timeDuration := 300 + (rand.Int63() % 150)
+	// timeDuration := 300 + (rand.Int63() % 150)
+	timeDuration := 500 + (rand.Int63() % 300)
 	ticker := time.NewTicker(10 * time.Millisecond)
     defer ticker.Stop()
 
@@ -1332,24 +1399,28 @@ func (rf *Raft) beLeader() {
 
 		// if currCommitIndex != rf.commitIndex {
 		if rf.lastApply != rf.commitIndex {
-			for logId := rf.lastApply+1; logId <= rf.commitIndex; logId++ {
+			start := rf.lastApply + 1
+			end := rf.commitIndex
+			logCopy := make([]Entry, end - start + 1)
+			copy(logCopy, rf.log[start: end+1])
+			rf.lastApply = end
+			rf.mu.Unlock()
+
+			for logId := start; logId <= end; logId++ {
 				// apply message
 				DebugLog(dLog, "S%d [%d] Leader apply LOG logId: %d, lastIncludeIndex: %d", rf.me, rf.term, logId, rf.lastIncludeIndex)
 				msg := ApplyMsg{
 					CommandValid : true,
-					Command : rf.log[logId - rf.lastIncludeIndex].Cmd,
+					Command : logCopy[logId - start - rf.lastIncludeIndex].Cmd,
 					CommandIndex : logId,
+					CommandTerm : logCopy[logId - start - rf.lastIncludeIndex].Term,
 				}
-				
-				rf.lastApply++
 
-				DebugLog(dTest, "S%d [%d] Leader apply LOG, CommandIndex= %d", rf.me, rf.term, logId)
+				DebugLog(dTest, "S%d [%d] Leader apply LOG, CommandIndex= %d rf.lastApply = %d", rf.me, rf.term, logId, rf.lastApply)
 
-				rf.mu.Unlock()
 				rf.applyCh <- msg
-				rf.mu.Lock()
 			}
-			// currCommitIndex = rf.commitIndex
+			rf.mu.Lock()
 		}
 		DebugLog(dLog, "S%d [%d] Leader, LOG: %v", rf.me, rf.term, rf.getLogInfo(rf.log))
 		DebugLog(dTest, "S%d [%d] Leader, lastApplied=%d, rf.commitIndex=%d", rf.me, rf.term, rf.lastApplied, rf.commitIndex)

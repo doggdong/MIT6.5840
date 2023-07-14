@@ -425,7 +425,10 @@ loop:
 		failed := false
 		cmds := []int{}
 		for index := range is {
+			// 如果index被多数所同意,则返回cmd
 			cmd := cfg.wait(index, servers, term)
+			// fmt.Printf("-------------- index %d wait cmd = %v ------------\n", index, cmd)
+
 			if ix, ok := cmd.(int); ok {
 				if ix == -1 {
 					// peers have moved on to later terms

@@ -3,7 +3,8 @@ package kvraft
 import "6.5840/labrpc"
 import "crypto/rand"
 import "math/big"
-import "unsafe"
+// import "unsafe"
+// import "fmt"
 
 const(
 	NotLeader = iota
@@ -68,7 +69,8 @@ func (ck *Clerk) Get(key string) string {
 
 	// You will have to modify this function.
 	// send rpc to leader, to commit a log
-	DPrintf("client[%d] Get, MsgId= %d", ck.ClientId, ck.MsgId)
+	// DPrintf("client[%d] Get, MsgId= %d", ck.ClientId, ck.MsgId)
+	// fmt.Printf("client[%d] Get %v\n", ck.ClientId, key)
 
 	args := RpcArgs{
 		Cmd : "Get",
@@ -85,22 +87,21 @@ func (ck *Clerk) Get(key string) string {
 	
 		if !ok || reply.Info == NotLeader {
 			// resend rpc
-			num := nrand() % int64(len(ck.servers))
-			ck.leaderId = *(*int)(unsafe.Pointer(&num))
-			DPrintf("client[%d] change leader", ck.ClientId)
+			// num := nrand() % int64(len(ck.servers))
+			// ck.leaderId = *(*int)(unsafe.Pointer(&num))
+			ck.leaderId = (ck.leaderId + 1) % len(ck.servers)
+			DPrintf("client[%d] change leader resend", ck.ClientId)
 
 			continue
 		} else if reply.Info == Timeout {
 			continue
-		} else if reply.Info == NoSuchKey {
-			return ""
 		} else if reply.Info == Success{
-			DPrintf("client[%d] Get, success", ck.ClientId)
+			DPrintf("client[%d] Get %v, success, value= %v", ck.ClientId, key, reply.Value)
+			// fmt.Printf("client[%d] Get %v, success, value= %v\n", ck.ClientId, key, reply.Value)
 
 			ck.MsgId++
 			return reply.Value
 		} 
-		DPrintf("client[%d] Get, resend", ck.ClientId)
 
 	}
 
@@ -134,20 +135,25 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 	
 		if !ok || reply.Info == NotLeader {
 			// resend rpc
-			num := nrand() % int64(len(ck.servers))
-			ck.leaderId = *(*int)(unsafe.Pointer(&num))
-			DPrintf("client[%d] PutAppend, MsgId= %d, change Leader, resend", ck.ClientId, ck.MsgId)
+			// num := nrand() % int64(len(ck.servers))
+			// ck.leaderId = *(*int)(unsafe.Pointer(&num))
+			ck.leaderId = (ck.leaderId + 1) % len(ck.servers)
+
+			// DPrintf("client[%d] PutAppend, MsgId= %d, change Leader, resend", ck.ClientId, ck.MsgId)
+			DPrintf("client[%d] putAppend, cmd= %v, key= %v, value= %v resend", ck.ClientId, op,key, value)
+
 			continue
 		} else if reply.Info == Timeout {
 			DPrintf("client[%d] PutAppend, MsgId= %d, timeout, resend", ck.ClientId, ck.MsgId)
 
 			continue
 		} else if reply.Info == Success{
-			DPrintf("client[%d] PutAppend, MsgId= %d, reply success", ck.ClientId, ck.MsgId)
+			DPrintf("client[%d] PutAppend, cmd= %v, key= %v, value= %v MsgId= %d, reply success", ck.ClientId, op, key, value, ck.MsgId)
 
 			ck.MsgId++
 			return
 		} 
+
 	}
 
 }

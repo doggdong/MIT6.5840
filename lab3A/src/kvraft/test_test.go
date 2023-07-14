@@ -11,6 +11,9 @@ import "sync"
 import "sync/atomic"
 import "fmt"
 import "io/ioutil"
+import "runtime"
+import "log"
+
 
 // The tester generously allows solutions to complete elections in one second
 // (much more than the paper's range of timeouts).
@@ -278,6 +281,8 @@ func GenericTest(t *testing.T, part string, nclients int, nservers int, unreliab
 				if (rand.Int() % 1000) < 500 {
 					// log.Printf("%d: client new append %v\n", cli, nv)
 					Append(cfg, myck, key, nv, opLog, cli)
+					// log.Printf("%d: client new append %v get return\n", cli, nv)
+
 					if !randomkeys {
 						last = NextValue(last, nv)
 					}
@@ -290,6 +295,8 @@ func GenericTest(t *testing.T, part string, nclients int, nservers int, unreliab
 				} else {
 					// log.Printf("%d: client new get %v\n", cli, key)
 					v := Get(cfg, myck, key, opLog, cli)
+					// log.Printf("%d: client new get %v get return value: %v \n ", cli, key, v)
+
 					// the following check only makes sense when we're not using random keys
 					if !randomkeys && v != last {
 						t.Fatalf("get wrong value, key %v, wanted:\n%v\n, got\n%v\n", key, last, v)
@@ -340,11 +347,11 @@ func GenericTest(t *testing.T, part string, nclients int, nservers int, unreliab
 		for i := 0; i < nclients; i++ {
 			// log.Printf("read from clients %d\n", i)
 			j := <-clnts[i]
-			// if j < 10 {
-			// 	log.Printf("Warning: client %d managed to perform only %d put operations in 1 sec?\n", i, j)
-			// }
+			if j < 10 {
+				log.Printf("Warning: client %d managed to perform only %d put operations in 1 sec?\n", i, j)
+			}
 			key := strconv.Itoa(i)
-			// log.Printf("Check %v for client %d\n", j, i)
+			log.Printf("Check %v for client %d\n", j, i)
 			v := Get(cfg, ck, key, opLog, 0)
 			if !randomkeys {
 				checkClntAppends(t, i, v, j)
@@ -392,6 +399,7 @@ func GenericTest(t *testing.T, part string, nclients int, nservers int, unreliab
 // Check that ops are committed fast enough, better than 1 per heartbeat interval
 func GenericTestSpeed(t *testing.T, part string, maxraftstate int) {
 	const nservers = 3
+	// const numOps = 900
 	const numOps = 1000
 	cfg := make_config(t, nservers, false, maxraftstate)
 	defer cfg.cleanup()
@@ -407,6 +415,7 @@ func GenericTestSpeed(t *testing.T, part string, maxraftstate int) {
 	start := time.Now()
 	for i := 0; i < numOps; i++ {
 		ck.Append("x", "x 0 "+strconv.Itoa(i)+" y")
+		fmt.Println("++++++++++ goroutine numbers: ", runtime.NumGoroutine())
 	}
 	dur := time.Since(start)
 

@@ -1,0 +1,58 @@
+Test (2B): basic agreement ...
+-------------- one (100) ------------
+labgob warning: Decoding into a non-default variable/field Term may not work
+-------------- one (200) ------------
+-------------- one (300) ------------
+  ... Passed --   0.7  3   16    4802    3
+Test (2B): RPC byte count ...
+  ... Passed --   1.5  3   48  115294   11
+Test (2B): test progressive failure of followers ...
+-------------- disconnect follower 2  ------------
+-------------- disconnect the remaining follower  ------------
+-------------- check that command 104 did not commit.  ------------
+  ... Passed --   4.7  3  108   23945    3
+Test (2B): test failure of leaders ...
+  ... Passed --   5.2  3  184   39560    3
+Test (2B): agreement after follower reconnects ...
+-------------- disconnect follower 2 ------------
+-------------- follower 2 reconnect ------------
+  ... Passed --   4.0  3   86   24002    7
+Test (2B): no agreement if too many followers disconnect ...
+-------------- disconnect follower 0 1 2------------
+-------------- reconnect follower 0 1 2------------
+  ... Passed --   3.5  5  180   40507    4
+-------------- start create 3 servers ------------
+Test (2B): concurrent Start()s ...
+-------------- try= 0, check one leader ------------
+-------------- try= 0, check one leader over ------------
+-------------- get the expect environment ------------
+  ... Passed --   0.6  3   18    5824    6
+Test (2B): rejoin of partitioned leader ...
+-------------- disconnect leader 0 ------------
+-------------- new leader commit 103 ------------
+-------------- disconnect leader 1 ------------
+-------------- old leader 0 rejoin ------------
+-------------- connect all 1 ------------
+  ... Passed --   6.2  3  188   47655    4
+Test (2B): leader backs up quickly over incorrect follower logs ...
+-------------- disconnect follower 0 1 2------------
+-------------- submit 50 command------------
+-------------- submit 50 command over ------------
+-------------- curr partion disconnect ------------
+-------------- allow other partition to recover 0 1 2------------
+-------------- commit 50 command ------------
+-------------- commit 50 command over------------
+-------------- disconnect follower 0 ------------
+-------------- 1 2 ------------
+-------------- submit 50 command------------
+-------------- submit 50 command over------------
+-------------- connect server 3 4 0 ------------
+-------------- commit 50 command 2------------
+-------------- commit 50 command over ------------
+-------------- connect every one ------------
+  ... Passed --  18.0  5 2132 1309653  102
+******************************************* 
+Test (2B): RPC counts aren't too high ...
+apply error: server 0 apply out of order 11
+exit status 1
+FAIL	6.5840/raft	45.649s
